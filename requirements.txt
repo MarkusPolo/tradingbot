@@ -1,0 +1,13 @@
+pandas
+numpy
+ta
+tsfresh
+scikit-learn
+xgboost
+lightgbm
+torch
+tensorflow # falls Autoencoder mit TF
+stable-baselines3[extra]
+sb3-contrib
+alpaca-trade-api
+ccxt
