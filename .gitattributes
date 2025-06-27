@@ -1,0 +1,3 @@
+data/features/BTC_features.csv filter=lfs diff=lfs merge=lfs -text
+data/raw/BTC_USDT.csv filter=lfs diff=lfs merge=lfs -text
+data/regime/BTC_regimes.csv filter=lfs diff=lfs merge=lfs -text
