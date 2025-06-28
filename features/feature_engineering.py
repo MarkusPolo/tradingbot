@@ -3,7 +3,7 @@ import ta
 import os
 
 
-def load_data(path='../data/BTC_USDT.csv'):
+def load_data(path='../data/raw/BTC_USDT.csv'):
     df = pd.read_csv(path, parse_dates=['timestamp'])
     df.set_index('timestamp', inplace=True)
     return df
