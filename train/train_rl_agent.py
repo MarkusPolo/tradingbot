@@ -1,4 +1,16 @@
+
+
+from pathlib import Path
+import sys
+
+BASE_DIR = Path(__file__).resolve().parents[1]
+sys.path.append(str(BASE_DIR))          #  <─  wichtig
+
+
 # train/train_rl_agent.py
+from tqdm.auto import tqdm
+from stable_baselines3.common.callbacks import BaseCallback
+
 from pathlib import Path
 import pandas as pd
 from stable_baselines3.common.vec_env import SubprocVecEnv, VecNormalize
@@ -20,6 +32,23 @@ policy_kwargs = dict(
     shared_lstm=True,
     enable_critic_lstm=False,
 )
+
+class TqdmCallback(BaseCallback):
+    def __init__(self, total_timesteps: int, verbose=0):
+        super().__init__(verbose)
+        self.total_timesteps = total_timesteps
+        self.pbar = None
+
+    def _on_training_start(self) -> None:
+        self.pbar = tqdm(total=self.total_timesteps, desc="🏋️ RL Training", unit="steps")
+
+    def _on_step(self) -> bool:
+        self.pbar.update(self.model.n_envs)
+        return True
+
+    def _on_training_end(self) -> None:
+        self.pbar.close()
+
 
 def make_env(df_slice):
     return lambda: MultiFeatureTradingEnv(df_slice)
@@ -48,7 +77,8 @@ def main():
         device=device,
     )
 
-    model.learn(total_timesteps=TIMESTEPS, progress_bar=True)
+    callback = TqdmCallback(total_timesteps=TIMESTEPS)
+    model.learn(total_timesteps=TIMESTEPS, callback=callback)
     model.save(MODEL_PATH)
     env.save(VEC_PATH)
     print("✅ Modell & Normalizer gespeichert")
